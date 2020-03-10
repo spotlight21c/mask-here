@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>지도 생성하기</title>
+    <style>
+        @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+        /* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+        html,
+        body,
+        div,
+        span,
+        applet,
+        object,
+        iframe,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        blockquote,
+        pre,
+        a,
+        abbr,
+        acronym,
+        address,
+        big,
+        cite,
+        code,
+        del,
+        dfn,
+        em,
+        img,
+        ins,
+        kbd,
+        q,
+        s,
+        samp,
+        small,
+        strike,
+        strong,
+        sub,
+        sup,
+        tt,
+        var,
+        b,
+        u,
+        i,
+        center,
+        dl,
+        dt,
+        dd,
+        ol,
+        ul,
+        li,
+        fieldset,
+        form,
+        label,
+        legend,
+        table,
+        caption,
+        tbody,
+        tfoot,
+        thead,
+        tr,
+        th,
+        td,
+        article,
+        aside,
+        canvas,
+        details,
+        embed,
+        figure,
+        figcaption,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        output,
+        ruby,
+        section,
+        summary,
+        time,
+        mark,
+        audio,
+        video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+
+        /* HTML5 display-role reset for older browsers */
+        article,
+        aside,
+        details,
+        figcaption,
+        figure,
+        footer,
+        header,
+        hgroup,
+        menu,
+        nav,
+        section {
+            display: block;
+        }
+
+        body {
+            line-height: 1;
+        }
+
+        ol,
+        ul {
+            list-style: none;
+        }
+
+        blockquote,
+        q {
+            quotes: none;
+        }
+
+        blockquote:before,
+        blockquote:after,
+        q:before,
+        q:after {
+            content: '';
+            content: none;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        body,
+        html {
+            height: 100%;
+            font-size: 12pt;
+            line-height: 1.4;
+            font-family: 'Noto Sans KR',
+                sans-serif;
+        }
+
+        .tip {
+            font-size: 9pt;
+        }
+
+        #titlebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 5px 0 5px 0;
+            background: white;
+
+        }
+
+        #search {
+            position: relative;
+        }
+
+        #search .control {
+            padding: 3px;
+            margin: 0 70px 0 16px;
+            border-radius: 3px;
+            background: #eee;
+        }
+
+        #search input {
+            width: 100%;
+            background: #eee;
+            border: 0;
+            line-height: 1.4;
+        }
+
+        #search button {
+            position: absolute;
+            top: 0;
+            right: 15px;
+            background: transparent;
+            border: 0;
+        }
+
+        #available {
+            text-align: center;
+            margin: 0 0 5px 0;
+        }
+
+        #available strong {
+            color: blue;
+        }
+
+        #available_container {
+            position: absolute;
+            top: 80px;
+            right: 30px;
+            background: white;
+            width: 140px;
+            z-index: 100;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 2px 2px #cccccc;
+            font-size: 11pt;
+        }
+
+        #fixed_info {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            background: white;
+            width: 100%;
+            height: 140px;
+            z-index: 100;
+            border-radius: 10px 10px 0 0;
+        }
+
+        #fixed_info .infowindow {
+            padding: 10px;
+        }
+
+        #get_location {
+            position: absolute;
+            top: 80px;
+            left: 10px;
+            z-index: 100;
+            background: #fff;
+            cursor: pointer;
+            padding: 3px;
+            border-radius: 2px;
+            box-shadow: 1px 1px 1px 1px #cccccc;
+        }
+
+        #get_location img {
+            vertical-align: top;
+        }
+
+        .infowindow {
+            max-width: 300px;
+            padding: 5px;
+        }
+
+        .infowindow .name {
+            font-weight: bold;
+        }
+
+        .infowindow .address {
+            font-size: 9pt;
+            color: #999;
+        }
+
+        .actions {
+            margin: 5px 0 0 0;
+        }
+
+        .action_button {
+            display: inline-block;
+            border: 1px solid blue;
+            margin: 0 5px 0 0;
+            padding: 3px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: blue;
+            font-size: 11pt;
+        }
+
+        .action_button.naver {
+            border: 1px solid green;
+            color: green;
+        }
+
+        .plenty {
+            color: #3bb143;
+        }
+
+        .some {
+            color: #fdd017;
+        }
+
+        .few {
+            color: red;
+        }
+
+        .empty {
+            color: gray;
+        }
+
+        @media only screen and (max-width: 600px) {}
+
+        @media only screen and (min-width: 601px) {}
+    </style>
+</head>
+
+<body>
+    <!-- 지도를 표시할 div 입니다 -->
+
+    <div id="map" style="width:100%;height:100%;"></div>
+    <div id="titlebar">
+        <div id="available"></div>
+        <div id="search">
+            <form onsubmit="searchPlaces(); return false;">
+                <div class="control"><input type="text" name="keyword" id="keyword" placeholder="장소로검색"></div>
+                <button type="submit">검색</button>
+            </form>
+        </div>
+    </div>
+    <div id="available_container">
+        <div>
+            <span class="plenty">●</span> 충분 : 100개 이상<br>
+            <span class="some">●</span> 보통 : 100개 미만<br>
+            <span class="few">●</span> 부족 : 30개 미만<br>
+            <span class="empty">●</span> 없음 : 1개~0개<br>
+            <!--
+            <span class="tip">실제 현장 판매처의 현황과 5분~10분 정도의 차이가 있습니다. 성인용 마스크를 대상으로 합니다.</span>
+            -->
+        </div>
+    </div>
+    <div id="get_location"><img src="ic_my_location_black.png" width="34" height="34" onclick="getLocation()"></div>
+    <div id="fixed_info">
+
+    </div>
+
+    <script type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=506132f7bda068c624028898bb31b671&libraries=services"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        var dayOfWeek = new Date().getDay();
+
+        var availableDiv = document.getElementById('available');
+        if (dayOfWeek == 0) {
+            availableDiv.innerHTML = '오늘은 주중에 구입하신 못하신 분들만 구입 가능합니다';
+        } else if (dayOfWeek == 1) {
+            availableDiv.innerHTML = '오늘은 출생연도 끝자리가 <strong>1, 6</strong>년생만 구입 가능합니다';
+        } else if (dayOfWeek == 2) {
+            availableDiv.innerHTML = '오늘은 출생연도 끝자리가 <strong>2, 7</strong>년생만 구입 가능합니다';
+        } else if (dayOfWeek == 3) {
+            availableDiv.innerHTML = '오늘은 출생연도 끝자리가 <strong>3, 8</strong>년생만 구입 가능합니다';
+        } else if (dayOfWeek == 4) {
+            availableDiv.innerHTML = '오늘은 출생연도 끝자리가 <strong>4, 9</strong>년생만 구입 가능합니다';
+        } else if (dayOfWeek == 5) {
+            availableDiv.innerHTML = '오늘은 출생연도 끝자리가 <strong>5, 0</strong>년생만 구입 가능합니다';
+        } else if (dayOfWeek == 6) {
+            availableDiv.innerHTML = '오늘은 주중에 구입하신 못하신 분들만 구입 가능합니다';
+        }
+
+        var lat = 33.450701;
+        var lng = 126.570667;
+        var isLoading = false;
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+            mapOption = {
+                center: new kakao.maps.LatLng(lat, lng), // 지도의 중심좌표
+                level: 3 // 지도의 확대 레벨
+            };
+
+        var selectedMarker = null;
+        var originMarkerImage = null;
+
+        // 장소 검색 객체를 생성합니다
+        var ps = new kakao.maps.services.Places();
+
+        // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+        var center = map.getCenter();
+        console.log(center.getLat())
+        console.log(center.getLng())
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                console.log("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            setCenter(position.coords.latitude, position.coords.longitude);
+        }
+
+        function setCenter(lat, lng) {
+            // 이동할 위도 경도 위치를 생성합니다 
+            var moveLatLon = new kakao.maps.LatLng(lat, lng);
+
+            // 지도 중심을 이동 시킵니다
+            map.setCenter(moveLatLon);
+
+            fetchStores(lat, lng);
+        }
+
+        function searchPlaces() {
+
+            var keyword = document.getElementById('keyword').value;
+
+            if (!keyword.replace(/^\s+|\s+$/g, '')) {
+                alert('키워드를 입력해주세요!');
+                return false;
+            }
+
+            // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
+            ps.keywordSearch(keyword, placesSearchCB);
+        }
+
+        // 장소검색이 완료됐을 때 호출되는 콜백함수 입니다
+        function placesSearchCB(data, status, pagination) {
+            if (status === kakao.maps.services.Status.OK) {
+
+                // 정상적으로 검색이 완료됐으면
+                // 검색 목록과 마커를 표출합니다
+                // displayPlaces(data);
+                console.log(data);
+                if (data.length > 0) {
+                    setCenter(data[0].y, data[0].x);
+                }
+
+                // 페이지 번호를 표출합니다
+                // displayPagination(pagination);
+
+            } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+
+                alert('검색 결과가 존재하지 않습니다.');
+                return;
+
+            } else if (status === kakao.maps.services.Status.ERROR) {
+
+                alert('검색 결과 중 오류가 발생했습니다.');
+                return;
+
+            }
+        }
+
+        function fetchStores(lat, lng) {
+            isLoading = true;
+            axios.get('https://8oi9s0nnth.apigw.ntruss.com/corona19-masks/v1/storesByGeo/json?lat=' + lat + '&lng=' + lng + '&m=1000')
+                .then(function (response) {
+                    // handle success
+                    console.log(response);
+
+                    if (response.data.count > 0) {
+                        for (var i = 0; i < response.data.stores.length; i++) {
+                            var latlng = new kakao.maps.LatLng(response.data.stores[i].lat, response.data.stores[i].lng);
+
+                            var imageSrc = 'red.png', // 마커이미지의 주소입니다    
+                                imageSize = new kakao.maps.Size(48, 48), // 마커이미지의 크기입니다
+                                imageOption = { offset: new kakao.maps.Point(16, 48) }; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+
+                            if (response.data.stores[i].remain_stat == "plenty") {
+                                imageSrc = 'green.png';
+                            } else if (response.data.stores[i].remain_stat == "some") {
+                                imageSrc = 'yello.png';
+                                imageSize = new kakao.maps.Size(42, 42);
+                                imageOption = { offset: new kakao.maps.Point(14, 42) }
+                            } else if (response.data.stores[i].remain_stat == "few") {
+                                imageSrc = 'red.png';
+                                imageSize = new kakao.maps.Size(36, 36);
+                                imageOption = { offset: new kakao.maps.Point(12, 36) }
+                            } else {
+                                // if (response.data.stores[i].remain_stat == "empty") 
+                                imageSrc = 'gray.png';
+                                imageSize = new kakao.maps.Size(30, 30);
+                                imageOption = { offset: new kakao.maps.Point(10, 30) }
+                            }
+
+                            // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
+                            var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption)
+
+                            var marker = new kakao.maps.Marker({
+                                map: map, // 마커를 표시할 지도
+                                position: latlng, // 마커를 표시할 위치
+                                title: response.data.stores[i].name, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+                                clickable: true,
+                                image: markerImage
+                            });
+
+                            var infowindow = new kakao.maps.InfoWindow({
+                                content: getInfoWindowHtml(response.data.stores[i]) // 인포윈도우에 표시할 내용
+                            });
+
+                            kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
+                            kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+
+                            kakao.maps.event.addListener(marker, 'click', displayStoreInfo(marker, response.data.stores[i]));
+                        }
+
+                    }
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+                .then(function () {
+                    // always executed
+                    isLoading = false;
+                });
+        }
+
+
+        // 지도가 이동, 확대, 축소로 인해 중심좌표가 변경되면 마지막 파라미터로 넘어온 함수를 호출하도록 이벤트를 등록합니다
+        kakao.maps.event.addListener(map, 'center_changed', function () {
+
+            // 지도의  레벨을 얻어옵니다
+            var level = map.getLevel();
+
+            // 지도의 중심좌표를 얻어옵니다 
+            var latlng = map.getCenter();
+
+            // var message = '<p>지도 레벨은 ' + level + ' 이고</p>';
+
+            if (!isLoading) {
+                fetchStores(latlng.getLat(), latlng.getLng())
+            } else {
+                console.log("loading...")
+            }
+
+            document.getElementById('fixed_info').style.display = 'none';
+        });
+
+        kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
+            document.getElementById('fixed_info').style.display = 'none';
+
+        });
+
+        // 인포윈도우를 표시하는 클로저를 만드는 함수입니다 
+        function makeOverListener(map, marker, infowindow) {
+            return function () {
+                infowindow.open(map, marker);
+            };
+        }
+
+        // 인포윈도우를 닫는 클로저를 만드는 함수입니다 
+        function makeOutListener(infowindow) {
+            return function () {
+                infowindow.close();
+            };
+        }
+
+        function displayStoreInfo(marker, store) {
+            return function () {
+                console.log("displayStoreInfo");
+                console.log(store);
+                console.log(marker);
+
+                if (!selectedMarker || selectedMarker !== marker) {
+
+                    if (!!selectedMarker) {
+                        selectedMarker.setImage(originMarkerImage);
+                    }
+
+                    originMarkerImage = marker.getImage();
+
+
+                    var imageSrc = 'red.png', // 마커이미지의 주소입니다    
+                        imageSize = new kakao.maps.Size(48, 48), // 마커이미지의 크기입니다
+                        imageOption = { offset: new kakao.maps.Point(16, 48) }; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+
+                    if (store.remain_stat == "plenty") {
+                        imageSrc = 'green_on.png';
+                    } else if (store.remain_stat == "some") {
+                        imageSrc = 'yello_on.png';
+                        imageSize = new kakao.maps.Size(42, 42);
+                        imageOption = { offset: new kakao.maps.Point(14, 42) }
+                    } else if (store.remain_stat == "few") {
+                        imageSrc = 'red_on.png';
+                        imageSize = new kakao.maps.Size(36, 36);
+                        imageOption = { offset: new kakao.maps.Point(12, 36) }
+                    } else {
+                        // if (store.remain_stat == "empty") 
+                        imageSrc = 'gray_on.png';
+                        imageSize = new kakao.maps.Size(30, 30);
+                        imageOption = { offset: new kakao.maps.Point(10, 30) }
+                    }
+
+                    // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
+                    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption)
+                    marker.setImage(markerImage);
+                }
+
+                selectedMarker = marker;
+
+                document.getElementById('fixed_info').innerHTML = getFixedInfoWindowHtml(store)
+                document.getElementById('fixed_info').style.display = 'block';
+            }
+        }
+
+        function getInfoWindowHtml(store) {
+            console.log("getInfoWindowHtml");
+            console.log(store);
+            var htmlContent = '<div class="infowindow">';
+            htmlContent += '<div class="name">' + store.name + '</div>'
+            htmlContent += '<div class="address">' + store.addr + '</div>'
+            if (store.remain_stat == "plenty") {
+                htmlContent += '<div class="plenty">충분</div>'
+            } else if (store.remain_stat == "some") {
+                htmlContent += '<div class="some">보통</div>'
+            } else if (store.remain_stat == "few") {
+                htmlContent += '<div class="few">부족</div>'
+            } else if (store.remain_stat == "empty") {
+                htmlContent += '<div class="empty">없음</div>'
+            }
+
+            // htmlContent += '<div>' + store.stock_at + '</div>'
+            /*
+            if (store.type == "01") {
+                htmlContent += '<div>약국</div>'
+            } else if (store.type == "02") {
+                htmlContent += '<div>우체국</div>'
+            } else if (store.type == "03") {
+                htmlContent += '<div>농협</div>'
+            }
+            */
+            htmlContent += '</div>';
+
+            return htmlContent;
+        }
+
+        function getFixedInfoWindowHtml(store) {
+            console.log("getInfoWindowHtml");
+            console.log(store);
+            var htmlContent = '<div class="infowindow">';
+            htmlContent += '<div class="name">' + store.name + '</div>'
+            htmlContent += '<div class="address">' + store.addr + '</div>'
+            if (store.remain_stat == "plenty") {
+                htmlContent += '<div class="plenty">충분</div>'
+            } else if (store.remain_stat == "some") {
+                htmlContent += '<div class="some">보통</div>'
+            } else if (store.remain_stat == "few") {
+                htmlContent += '<div class="few">부족</div>'
+            } else if (store.remain_stat == "empty") {
+                htmlContent += '<div class="empty">없음</div>'
+            }
+
+            // htmlContent += '<div>' + store.stock_at + '</div>'
+            /*
+            if (store.type == "01") {
+                htmlContent += '<div>약국</div>'
+            } else if (store.type == "02") {
+                htmlContent += '<div>우체국</div>'
+            } else if (store.type == "03") {
+                htmlContent += '<div>농협</div>'
+            }
+            */
+            htmlContent += '<div class="actions">';
+            htmlContent += '<a href="https://map.kakao.com/link/map/' + store.name + ',' + store.lat + ',' + store.lng + '" class="action_button" target="_blank">카카오맵 바로가기</a>';
+            htmlContent += '<a href="http://map.naver.com/index.nhn?lng=' + store.lng + '&lat=' + store.lat + '&pinTitle=' + store.name + '" class="action_button naver" target="_blank">네이버맵 바로가기</a>';
+            htmlContent += '</div>';
+
+            htmlContent += '</div>';
+
+            return htmlContent;
+        }
+
+        getLocation();     
+    </script>
+</body>
+
+</html>
