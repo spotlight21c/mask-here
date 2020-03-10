@@ -676,6 +676,30 @@
 
         getLocation();     
     </script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-analytics.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyBFvWKF1rNFsReXuUlm-9egN-ZMSu3SDWY",
+            authDomain: "mask-here.firebaseapp.com",
+            databaseURL: "https://mask-here.firebaseio.com",
+            projectId: "mask-here",
+            storageBucket: "mask-here.appspot.com",
+            messagingSenderId: "1047873972850",
+            appId: "1:1047873972850:web:069d06b15396397ec170eb",
+            measurementId: "G-JVH16M9MJ6"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+    </script>
 </body>
 
 </html>
